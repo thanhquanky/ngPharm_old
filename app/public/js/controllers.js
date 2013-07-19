@@ -41,6 +41,46 @@ function RegisterCtrl($scope, $http, $rootScope, $location) {
     }
 }
 
+function VendorsCtrl($scope, $http, Vendor) {
+    $scope.vendors = [];
+    
+    getVendorsFromServer();
+
+    
+    // get vendors list 
+    function getVendorsFromServer() {
+        console.log('getting vendors from server');
+        Vendor.query(function(data) {
+            $scope.vendors = data;
+        });
+    }
+
+    // add new vendor
+    $scope.createVendor = function (vendor) {
+        if ($scope.newVendorForm.$invalid) {
+            return;
+        }
+        Vendor.save({}, $scope.newVendor,
+            function (data) {
+                $scope.vendors.push(data);
+                $scope.statusMessage = '';
+                $scope.newVendor = {};
+
+            },
+            function (data, status, headers, config) {
+                if (data.status == 200) {
+                    $scope.statusMessage = 'New vendor has been added!';
+                }
+                else if (data.status == 400) {
+                    $scope.statusMessage = 'This vendor is already in the database';
+                }
+                else {
+                    $scope.statusMessage = 'Please try again';    
+                }
+            });
+    }
+}
+
 function TodosCtrl($scope, $http, Todo) {
 
     //get the todos from server
@@ -89,3 +129,87 @@ function TodosCtrl($scope, $http, Todo) {
 
 }
 
+function InvoicesCtrl($scope, ItemUnits, Vendor, Invoice, $http) {
+    $scope.subtotal = 0;
+    $scope.total = 0;
+    $scope.tax = 0;
+    $scope.newInvoice = {
+        vendor: "",
+        taxPercent: 0,
+        number: "",
+        date: new Date(),
+        items: []
+    };
+    $scope.selectedItems = [];
+    $scope.units = ItemUnits;
+    $scope.gridOptions = { 
+        data: 'newInvoice.items',
+        enableCellSelection: true,
+        enableRowSelection: true,
+        enableCellEditOnFocus: true,
+        columnDefs: [
+            {field: 'name', displayName: 'Name', enableCellEdit: true}, 
+            {field:'unit', displayName:'Unit', enableCellEdit: false},
+            {field:'quantity', displayName:'Quantity', enableCellEdit: true},
+            {field:'unitPrice', displayName:'Unit Price', enableCellEdit: true},
+            {field:'subTotal', displayName:'Subtotal', enableCellEdit: true}
+        ],
+        selectedItems: $scope.selectedItems
+    };
+
+    $scope.addItem = function() {
+        $scope.newInvoice.items.push($scope.newItem);
+        $scope.newItem = null;
+    };
+
+
+    // autocomplete vendor
+    $scope.getVendorSuggestion = function(vendor) {
+        if (vendor)
+            if (vendor.length >=3)
+                return $http.get('/api/Vendor/autocomplete/' + vendor).then(function(res) {
+                    return res.data;
+                });
+    };
+
+    // autocomplete item
+    $scope.getItemSuggestion = function(item) {
+        if (item)
+            if (item.length >=3)
+                return $http.get('/api/Item/autocomplete/' + item).then(function(res) {
+                    return res.data;
+                });
+    };
+
+
+    // update subtotal whenever quantity or unit price chance
+    $scope.$watch('newItem.quantity + newItem.unitPrice', function() {
+        if ($scope.newItem)
+            $scope.newItem.subTotal = $scope.newItem.quantity * $scope.newItem.unitPrice;
+    });
+
+
+    // update total price when data changes
+    $scope.$watch(function() {
+        var subtotal = 0;
+        var items = $scope.newInvoice.items;
+        var n = items.length;
+        for (var i=0; i<n; i++) {
+            if (items[i])
+                subtotal += items[i].subTotal;
+        }
+        $scope.subtotal = subtotal;
+        $scope.tax = subtotal * $scope.newInvoice.taxPercent / 100;
+        $scope.total = subtotal + $scope.tax;
+    });
+
+    // save invoice to database
+    $scope.saveInvoice = function() {
+        Invoice.save({}, $scope.newInvoice);
+    }
+
+    // delete selecting rows
+    $scope.removeSelectingItems = function() {
+        $scope.newInvoice.items = _.difference($scope.newInvoice.items, $scope.selectedItems);
+    }
+}

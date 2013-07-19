@@ -1,2 +1,36 @@
+body {
+	background-image: url('/img/cream_pixels.png');
+	background-repeat: both;
+}
 
+#main {
+	color: #696969;
+}
 
+.sidebar-nav li a{
+	color: #777;
+}
+
+.sidebar-nav-fixed {
+    padding: 9px 0;
+    position: fixed;
+    left:0px;
+    top: 100px;
+}
+
+.sidebar-nav-fixed li {
+	padding: 10px;
+}
+
+.row-fluid > .span-fixed-sidebar {
+    margin-left: 290px;
+}
+
+#itemList {
+	margin-top: 15px;
+}
+
+.gridStyle {
+    border: 1px solid rgb(212,212,212);
+    height: 300px
+}

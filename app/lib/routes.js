@@ -1,4 +1,5 @@
-module.exports = function (app, homeController, userController, todoController, apiController) {
+module.exports = function (app, homeController, userController, todoController, 
+    vendorController, itemController, invoiceController, apiController) {
 
     // Home
     app.get('/', homeController.index);
@@ -8,6 +9,20 @@ module.exports = function (app, homeController, userController, todoController, 
     app.post('/user/login', userController.authenticate);
     app.post('/user/register', userController.create);
     app.post('/user/logout', userController.kill);
+
+    //Vendor
+    app.get('/api/Vendor', ensureAuthenticated, vendorController.preSearch, apiController.search);
+    app.post('/api/Vendor', ensureAuthenticated, vendorController.preCreate, apiController.create);
+    app.post('/api/Vendor/:id', ensureAuthenticated, vendorController.preUpdate, apiController.update);
+    // Autocomplete
+    app.get('/api/Vendor/autocomplete/:name', vendorController.preAutocomplete, apiController.autocomplete);
+    app.get('/api/Item/autocomplete/:name', itemController.preAutocomplete, apiController.autocomplete);
+
+    //Invoice
+    app.get('/api/Invoice', ensureAuthenticated, invoiceController.preSearch, apiController.search);
+    app.post('/api/Invoice', ensureAuthenticated, invoiceController.preCreate, apiController.create);
+    app.post('/api/Invoice/:id', ensureAuthenticated, invoiceController.preUpdate, apiController.update);
+
 
     /*
     Rather than go right to the API routes below, we need to do a few things first, like say what Users Todos

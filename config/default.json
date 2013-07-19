@@ -7,7 +7,11 @@
     "request_timeout":1000,
     "port":3000,
     "mongodb":{
-        "uri":"mongodb://test:test@ds045507.mongolab.com:45507/service-health-train"
+        "uri":"mongodb://localhost/ngPharm"
     },
-    "character_encoding":"utf-8"
+    "character_encoding":"utf-8",
+    "autocomplete": {
+        "min_length": 3,
+        "max_results": 5
+    }
 }

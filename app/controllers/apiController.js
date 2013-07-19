@@ -1,4 +1,4 @@
-module.exports = function (app) {
+module.exports = function (app, config) {
     var controller = {};
 
     /*
@@ -22,6 +22,20 @@ module.exports = function (app) {
             });
         }
     ]
+
+    controller.autocomplete = [
+        function (req, res, next) {
+            var query = req.query;
+            var model = req.Model;
+
+            var max_results = config.autocomplete.max_results;
+            model.find(query, function (err, docs) {
+                if (err) return next(err);
+                return res.json(docs);
+            });
+        }
+    ]
+
     controller.create = [
         function (req, res, next) {
             console.log(req.body);

@@ -1,7 +1,7 @@
 'use strict';
 
 // Declare app level module which depends on filters, and services
-angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives'])
+angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives','ngGrid','ui.bootstrap','ui.date'])
     .config(['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
 
         //The routes that our angular app will handle
@@ -9,6 +9,8 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives'])
             .when('/', { templateUrl: '/partials/index.html', controller: IndexCtrl })
             .when('/login', { templateUrl: '/partials/login.html'})
             .when('/todos', { templateUrl: '/partials/todos.html', controller: TodosCtrl })
+            .when('/vendors', { templateUrl: '/partials/vendors.html', controller: VendorsCtrl })
+            .when('/invoices', { templateUrl: '/partials/invoices.html', controller: InvoicesCtrl })
             .otherwise({ templateUrl: '/partials/404.html' });
 
         //gets rid of the # in urls

@@ -9,5 +9,9 @@
     "mongodb": {
         "uri": "{{MONGOLAB_URI}}"
     },
-    "character_encoding": "utf-8"
+    "character_encoding": "utf-8",
+    "autocomplete": {
+        "min_length": 3,
+        "max_results": 5
+    }
 }

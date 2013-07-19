@@ -4,7 +4,7 @@ module.exports = function (app, Todo) {
     controller.preSearch = [
         function (req, res, next) {
             console.log('this it?');
-            req.query = {userId: req.user.id};
+            req.query = (req.user.id) ? {userId: req.user.id} : {};
             req.Model = Todo;
             next();
         }

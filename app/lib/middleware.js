@@ -24,6 +24,7 @@ module.exports = function (app, config, passportMiddleware ) {
         showStack:true
     });
 
+
     // Middleware stack for all requests
     app.use(express['static'](app.set('public')));                      // static files in /public
     app.use(connect_timeout({ time:config.request_timeout }));   // request timeouts
@@ -34,6 +35,12 @@ module.exports = function (app, config, passportMiddleware ) {
     app.use(passportMiddleware.initialize());
     app.use(passportMiddleware.session());
     app.use(passportMiddleware.setLocals);
+    app.all('/*', function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With");
+        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+        next();
+    });
     app.use(app.router);                                                // routes in lib/routes.js
 
     // Handle errors thrown from middleware/routes

@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html ng-app="myApp">
 <head>
-    <title>Angular Express Train</title>
-    <link rel='stylesheet' href='/css/style.css'/>
+    <title>ngPharm - Pharmacy Management Application powered by AngularJS</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/angular-ui/0.4.0/angular-ui.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css">
     <link rel='stylesheet' href='/css/bootstrap.min.css'/>
+    <link rel='stylesheet' href='/css/ng-grid.min.css'/>
+    <link rel='stylesheet' href='/css/style.css'/>
 </head>
 <body>
-<div class="container">
-    <div class="navbar navbar-inverse">
+<div class="container-fluid">
+    <div class="navbar">
 
         <div class="navbar-inner">
-            <a class="brand" ng-href='/'>Angular Express Train</a>
+            <a class="brand" ng-href='/'><span style="color:red">ng</span><span style="color: green">Pharm</span></a>
             <ul class="nav">
-                <li><a ng-href="/todos" ng-show="user.username">My Todos</a></li>
+                <li><a ng-href="/vendors" ng-show="user.username">Vendors</a></li>
+                <li><a ng-href="/invoices" ng-show="user.username">Invoices</a></li>
+                <li><a ng-href="/todos" ng-show="user.username">Todos</a></li>
             </ul>
+
             <ul class="nav pull-right" >
                 <li ng-hide="user.username"><a ng-href="/login">Login/Register</a> </li>
                 <li class="dropdown" ng-show="user.username">
@@ -27,27 +33,18 @@
         </div>
     </div>
 </div>
-<div class="container" ng-view>
-
-
+<div class="container-fluid">
+    <div id="main" class="offset3" ng-view>
 </div>
-<script type="text/javascript">
-
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-39761696-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-
-</script>
 </body>
+<script src="/js/lib/underscore.js"></script>
 <script src="/js/lib/jquery/jquery.js"></script>
+<script src="/js/lib/jquery/jquery-ui.min.js"></script>
 <script src="/js/lib/bootstrap/bootstrap.js"></script>
 <script src="/js/lib/angular/angular.js"></script>
+<script src="/js/lib/angular/ui.date.js"></script>
+<script src="/js/lib/angular/ui-bootstrap-tpls-0.4.0.min.js"></script>
+<script src="/js/lib/angular/ng-grid-2.0.7.min.js"></script>
 <script src="/js/lib/angular/angular-resource.js"></script>
 <script src="/js/app.js"></script>
 <script src="/js/services.js"></script>
