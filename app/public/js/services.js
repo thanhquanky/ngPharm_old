@@ -19,7 +19,7 @@ angular.module('myApp.services', ['ngResource'])
 
 		});
 	})
-	.value('ItemUnits', ["Bịch","Chai","Hôp","Vỉ","Viên","Thùng","Tuýp"]);
+	.value('ItemUnits', ["Bịch","Chai","Hộp","Vỉ","Viên","Thùng","Tuýp"]);
 
 /*
 

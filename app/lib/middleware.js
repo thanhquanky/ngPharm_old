@@ -1,6 +1,7 @@
 var express = require('express'),
     MongoStore = require('connect-mongo')(express),
-    connect_timeout = require('connect-timeout');
+    connect_timeout = require('connect-timeout'),
+    engine = require('express-hbs');
 
 
 // Middleware
@@ -35,6 +36,7 @@ module.exports = function (app, config, passportMiddleware ) {
     app.use(passportMiddleware.initialize());
     app.use(passportMiddleware.session());
     app.use(passportMiddleware.setLocals);
+
     app.all('/*', function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -47,6 +49,16 @@ module.exports = function (app, config, passportMiddleware ) {
     app.use(error_middleware);
 
     app.configure('development', function(){
+        app.set('helpers', engine.handlebars.helpers);
+        var helpers = require('express-hbs-helpers').helpers;
+        helpers(app, engine);
+        engine.registerHelper('list', function(text, options) {
+            var ret = '';
+            for (var i= 0, j=text.length; i<j; i++) {
+                ret = ret + '<tr>' + options.fn(text[i]) + '</tr>';
+            }
+            return ret;
+        });
         require('express-trace')(app);
     });
 };

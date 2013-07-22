@@ -10,6 +10,8 @@ module.exports = function (app) {
         partialsDir:path.join(__dirname, "../views/partials")
     }));
 
+
+
     // Static locals
     app.locals({
     });

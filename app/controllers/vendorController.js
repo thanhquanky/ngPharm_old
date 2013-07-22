@@ -11,9 +11,10 @@ module.exports = function (app, Vendor) {
     ]
     controller.preCreate = [
         function (req, res, next) {
-            Vendor.find({nickname: req.params.nickname}, function(err, result) {
+            var keyword = req.params.name;
+            Vendor.find({'name': keyword}, function(err, result) {
                 if (err) return next(err);
-                if (!result) {
+                if (!result || result.length == 0) {
                     req.Model = Vendor;
                     next();
                 }

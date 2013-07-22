@@ -1,19 +1,24 @@
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+module.exports = function (app, Item, Vendor) {
 
-module.exports = function (app, Item) {
-
-	var ItemSchema = new mongoose.Schema({
+	var ItemSchema = new Schema({
         name: {type: String},
         unit: {type: String},
         quantity: {type: Number},
         unitPrice: {type: Number},
         subTotal: {type: Number}
     });
-    
-    var InvoiceSchema = new mongoose.Schema({
-    	userId: {type: mongoose.Schema.Types.ObjectId},
-        number: {type: String},                            
-        vendorId: {type: mongoose.Schema.Types.ObjectId},
+
+    var VendorSchema = new Schema({
+        name: {type: String},                            	// lawful name of vendor
+        nickname: {type: String}                       	// friendly name "so call"
+    });
+
+    var InvoiceSchema = new Schema({
+    	userId: {type: Schema.Types.ObjectId},
+        number: {type: String},
+        vendor: {type: String},
         date: {type: Date, default: Date.now()},
         type: {type: String},
         items: [ItemSchema],
@@ -22,6 +27,30 @@ module.exports = function (app, Item) {
         tax: {type: Number},
         total: {type: Number}
     });
+    /*
+    InvoiceSchema.virtual('vendor')
+        .set(function(name) {
+            console.log('Looking for vendor id of ' + name);
+            var that = this;
+            Vendor.findOne({name: name}, function(err, doc) {
+                if (err) return next(err);
+                if (doc) {
+                    console.log('setting id to ' + doc._id);
+                    that.vendorId = doc._id;
+                    that.save();
+                }
+            });
+        })
+        .get(function() {
+            var that = this;
+            Vendor.find({_id: that.vendorId}, function(err, docs) {
+                if (err) return next(err);
+                if (docs) {
+                    return docs.name;
+                }
+            })
+        });
+    */
 
     return mongoose.model('Invoice', InvoiceSchema);
 }

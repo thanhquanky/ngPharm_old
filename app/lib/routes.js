@@ -1,5 +1,5 @@
 module.exports = function (app, homeController, userController, todoController, 
-    vendorController, itemController, invoiceController, apiController) {
+    vendorController, itemController, invoiceController, apiController, printController) {
 
     // Home
     app.get('/', homeController.index);
@@ -14,6 +14,7 @@ module.exports = function (app, homeController, userController, todoController,
     app.get('/api/Vendor', ensureAuthenticated, vendorController.preSearch, apiController.search);
     app.post('/api/Vendor', ensureAuthenticated, vendorController.preCreate, apiController.create);
     app.post('/api/Vendor/:id', ensureAuthenticated, vendorController.preUpdate, apiController.update);
+    
     // Autocomplete
     app.get('/api/Vendor/autocomplete/:name', vendorController.preAutocomplete, apiController.autocomplete);
     app.get('/api/Item/autocomplete/:name', itemController.preAutocomplete, apiController.autocomplete);
@@ -42,6 +43,7 @@ module.exports = function (app, homeController, userController, todoController,
     app.post('/api/:model/:id', ensureAuthenticated, apiController.update);
     app.del('/api/:model/:id', ensureAuthenticated, apiController.destroy);
 
+    app.get('/print/invoice/:id', ensureAuthenticated, invoiceController.prePrint, printController.print);
     /*
     default route if we haven't hit anything yet
     This will just return the index file and pass the url to our angular app.

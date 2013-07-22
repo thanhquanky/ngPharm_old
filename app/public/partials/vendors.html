@@ -5,53 +5,56 @@
     }
 </style>
 
-<div>
+<div ng-init="init()">
     <h2>Vendors</h2>
     <hr>
-    <a href="#" class="btn btn-primary" role="button" data-toggle="modal" data-target="#vendorModal">Add new vendor</a>
-    <div class="modal hide fade" id="vendorModal">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3>Add new vendor</h3>
-        </div>
-        <div class="modal-body">
-            <form name="newVendorForm" class="form-horizontal">
-                <div class="control-group">
-                    <label class="control-label">Name</label>
-                    <div class="controls">
-                        <input type="text" class="input-xlarge" ng-model="newVendor.name" required placeholder="Vendor name..." autofo>
-                    </div>
-                </div>  
-                <div class="control-group">
-                    <label class="control-label">Nickname</label>
-                    <div class="controls">
-                        <input type="text" class="input-xlarge" ng-model="newVendor.nickname" required placeholder="Vendor nickname...">
+    <div>
+        <a href="#" class="btn btn-primary" ng-click="open()">Add new vendor</a>
+        <div modal="state" close="close()" options="opts" id="vendorModal">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="close()">&times;</button>
+                <h3>Add new vendor</h3>
+            </div>
+            <div class="modal-body">
+                <form name="newVendorForm" class="form-horizontal">
+                    <div class="control-group">
+                        <label class="control-label">Name</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge" ng-model="newVendor.name" 
+                                required placeholder="Vendor name..." autofocus/>
+                        </div>
                     </div>  
-                </div>      
+                    <div class="control-group">
+                        <label class="control-label">Nickname</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge" ng-model="newVendor.nickname" placeholder="Vendor nickname..."/>
+                        </div>  
+                    </div>      
+                    <div class="control-group">
+                        <label class="control-label">Phone</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge" ng-model="newVendor.phone" placeholder="Vendor phone..."/>
+                        </div>
+                    </div>  
+                    <div class="control-group">
+                        <label class="control-label">Address</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge" ng-model="newVendor.address" placeholder="Vendor address..."/>
+                        </div>
+                    </div>      
+                    {{statusMessage}}
+                </form>
+            </div>  
+            <div class="modal-footer">
                 <div class="control-group">
-                    <label class="control-label">Phone</label>
-                    <div class="controls">
-                        <input type="text" class="input-xlarge" ng-model="newVendor.phone" required placeholder="Vendor phone...">
-                    </div>
-                </div>  
-                <div class="control-group">
-                    <label class="control-label">Address</label>
-                    <div class="controls">
-                        <input type="text" class="input-xlarge" ng-model="newVendor.address" required placeholder="Vendor address...">
-                    </div>
-                </div>      
-                {{statusMessage}}
-            </form>
-        </div>  
-        <div class="modal-footer">
-            <div class="control-group">
-                <button class="btn btn-primary" ng-click="createVendor()">Create</button>
+                    <button class="btn btn-primary" ng-click="createVendor(newVendorForm)">Create</button>
+                </div>
             </div>
         </div>
     </div>
     <br/>
     <br/>
-
+    <!--
     <table class="table table-hover table-bordered">
         <thead>
         <tr >
@@ -70,5 +73,6 @@
         </tr>
         </tbody>
     </table>
-    
+    -->
+    <div class="gridStyle" ng-grid="gridOptions"></div>
 </div>

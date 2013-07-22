@@ -43,10 +43,18 @@ function RegisterCtrl($scope, $http, $rootScope, $location) {
 
 function VendorsCtrl($scope, $http, Vendor) {
     $scope.vendors = [];
-    
-    getVendorsFromServer();
+    $scope.state = false;
+    $scope.opts = {
+        backdropFade: true,
+        dialogFade: true
+    };
+    $scope.open = function() {
+        $scope.state = true;
+    };
+    $scope.close = function() {
+        $scope.state = false;
+    }  
 
-    
     // get vendors list 
     function getVendorsFromServer() {
         console.log('getting vendors from server');
@@ -56,29 +64,34 @@ function VendorsCtrl($scope, $http, Vendor) {
     }
 
     // add new vendor
-    $scope.createVendor = function (vendor) {
+    $scope.createVendor = function () {
         if ($scope.newVendorForm.$invalid) {
+            console.log('invalid');
             return;
         }
         Vendor.save({}, $scope.newVendor,
-            function (data) {
-                $scope.vendors.push(data);
-                $scope.statusMessage = '';
-                $scope.newVendor = {};
-
-            },
             function (data, status, headers, config) {
-                if (data.status == 200) {
-                    $scope.statusMessage = 'New vendor has been added!';
-                }
-                else if (data.status == 400) {
-                    $scope.statusMessage = 'This vendor is already in the database';
-                }
-                else {
-                    $scope.statusMessage = 'Please try again';    
-                }
-            });
+                $scope.statusMessage = 'New vendor has been added!';
+                $scope.vendors.push(data);
+                $scope.newVendor = {};
+                $scope.close();
+            },
+            function (data) {
+                $scope.statusMessage = 'This vendor is already in the database';
+            }
+        );
     }
+    $scope.gridOptions = {
+        data: 'vendors',
+        showFooter: true,
+        columnDefs: [
+            {field: 'name', displayName: 'Name', enableCellEdit: true},
+            {field: 'phone', displayName: 'Phone', enableCellEdit: true},
+            {field: 'address', displayName: 'Address', enableCellEdit: true}
+        ]
+    };
+
+    getVendorsFromServer();
 }
 
 function TodosCtrl($scope, $http, Todo) {
@@ -129,26 +142,30 @@ function TodosCtrl($scope, $http, Todo) {
 
 }
 
-function InvoicesCtrl($scope, ItemUnits, Vendor, Invoice, $http) {
-    $scope.subtotal = 0;
-    $scope.total = 0;
-    $scope.tax = 0;
-    $scope.newInvoice = {
-        vendor: "",
-        taxPercent: 0,
-        number: "",
-        date: new Date(),
-        items: []
+// This controller handles adding new invoice tasks
+function NewInvoiceModalCtrl($scope, ItemUnits, Vendor, Invoice, $http) {
+    $scope.init = function() {
+        $scope.subtotal = 0;
+        $scope.total = 0;
+        $scope.tax = 0;
+        $scope.newInvoice = {
+            vendor: "",
+            taxPercent: 0,
+            number: "",
+            date: new Date(),
+            items: []
+        };
+        $scope.state = 'invoicesList';
+        $scope.selectedItems = [];
     };
-    $scope.selectedItems = [];
     $scope.units = ItemUnits;
-    $scope.gridOptions = { 
+    $scope.newInvoiceGridOptions = {
         data: 'newInvoice.items',
         enableCellSelection: true,
         enableRowSelection: true,
         enableCellEditOnFocus: true,
         columnDefs: [
-            {field: 'name', displayName: 'Name', enableCellEdit: true}, 
+            {field: 'name', displayName: 'Name', enableCellEdit: true},
             {field:'unit', displayName:'Unit', enableCellEdit: false},
             {field:'quantity', displayName:'Quantity', enableCellEdit: true},
             {field:'unitPrice', displayName:'Unit Price', enableCellEdit: true},
@@ -158,8 +175,11 @@ function InvoicesCtrl($scope, ItemUnits, Vendor, Invoice, $http) {
     };
 
     $scope.addItem = function() {
-        $scope.newInvoice.items.push($scope.newItem);
-        $scope.newItem = null;
+        // prevent accident press at add new item
+        if ($scope.newItem.name !== "") {
+            $scope.newInvoice.items.push($scope.newItem);
+            $scope.newItem = null;
+        }
     };
 
 
@@ -198,18 +218,101 @@ function InvoicesCtrl($scope, ItemUnits, Vendor, Invoice, $http) {
             if (items[i])
                 subtotal += items[i].subTotal;
         }
-        $scope.subtotal = subtotal;
-        $scope.tax = subtotal * $scope.newInvoice.taxPercent / 100;
-        $scope.total = subtotal + $scope.tax;
+        $scope.newInvoice.subtotal = subtotal;
+        $scope.newInvoice.tax = subtotal * $scope.newInvoice.taxPercent / 100;
+        $scope.newInvoice.total = subtotal + $scope.newInvoice.tax;
     });
 
     // save invoice to database
     $scope.saveInvoice = function() {
-        Invoice.save({}, $scope.newInvoice);
+        // well, empty invoice is not accepted
+        if ($scope.newInvoice.items.length > 0) {
+            Invoice.save({}, $scope.newInvoice);
+            //$scope.init();
+        }
     }
 
     // delete selecting rows
     $scope.removeSelectingItems = function() {
         $scope.newInvoice.items = _.difference($scope.newInvoice.items, $scope.selectedItems);
+    };
+
+    $scope.itemModal = {
+        state: false,
+        opts: {
+            backdropFade: true,
+            dialogFade:true
+        }
     }
+    $scope.open = function() {
+        $scope.itemModal.state = true;
+
+    }
+}
+
+function InvoicesCtrl($scope, ItemUnits, Vendor, Invoice, $http) {
+    $scope.init = function() {
+        $scope.openInvoicesList();
+    }
+
+    $scope.openInvoicesList = function() {
+        getInvoicesFromServer();
+        $scope.state = 'invoicesList';
+    };
+
+    $scope.selectedInvoice = [];
+
+    function getInvoicesFromServer() {
+        console.log('getting invoices');
+        Invoice.query(function(data) {
+            $scope.invoices = data;
+        });
+    }
+
+    $scope.setState = function(newState) {
+        $scope.state = newState;
+    }
+
+
+    $scope.invoicesListGridOptions = {
+        data: 'invoices',
+        enableRowSelection: true,
+        columnDefs: [
+            {field: 'vendor', displayName: 'Vendor'},
+            {field: 'date', displayName: 'Date', cellFilter: "date"},
+            {field: 'total', displayName: 'Total',cellFilter: "currency"}
+        ],
+        selectedItems: $scope.selectedInvoice,
+        multiSelect: false
+    };
+
+    $scope.lastInvoiceGridOptions = {
+        data: 'selectedInvoice[0].items',
+        enableCellSelection: true,
+        enableRowSelection: true,
+        enableCellEditOnFocus: true,
+        columnDefs: [
+            {field: 'name', displayName: 'Name', enableCellEdit: true},
+            {field:'unit', displayName:'Unit', enableCellEdit: false},
+            {field:'quantity', displayName:'Quantity', enableCellEdit: true},
+            {field:'unitPrice', displayName:'Unit Price', enableCellEdit: true},
+            {field:'subTotal', displayName:'Subtotal', enableCellEdit: true}
+        ],
+        selectedItems: $scope.selectedItems
+    };
+
+}
+
+function VendorModalCtrl($scope) {
+    $scope.state = false;
+    $scope.opts = {
+        backdropFade: true,
+        dialogFade: true
+    };
+    $scope.open = function() {
+        $scope.state = true;
+    };
+    $scope.close = function() {
+        $scope.state = false;
+    }  
 }
